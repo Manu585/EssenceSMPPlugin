@@ -4,6 +4,9 @@ import me.manu.essencesmpplugin.essence.Essence;
 import me.manu.essencesmpplugin.essence.subEssences.*;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class EssenceCreator {
     private static Essence airEssence;
     private static Essence bruteEssence;
@@ -64,4 +67,37 @@ public class EssenceCreator {
     public static ItemStack getStrengthEssenceItem() { return strengthEssence.getEssenceItem(); }
     public static ItemStack getSunsetEssenceItem() { return sunsetEssence.getEssenceItem(); }
     public static ItemStack getTimeEssenceItem() { return timeEssence.getEssenceItem(); }
+
+    public static Essence getEssenceByItemStack(ItemStack item) {
+        if (item == null) {
+            return null;
+        }
+
+        // List all essences and their corresponding getters for items.
+        Map<Essence, ItemStack> essenceMap = new HashMap<>();
+        essenceMap.put(airEssence, getAirEssenceItem());
+        essenceMap.put(bruteEssence, getBruteEssenceItem());
+        essenceMap.put(darknessEssence, getDarknessEssenceItem());
+        essenceMap.put(dragonEssence, getDragonEssenceItem());
+        essenceMap.put(gravityEssence, getGravityEssenceItem());
+        essenceMap.put(mistEssence, getMistEssenceItem());
+        essenceMap.put(mobEssence, getMobEssenceItem());
+        essenceMap.put(mysteryEssence, getMysteryEssenceItem());
+        essenceMap.put(strengthEssence, getStrengthEssenceItem());
+        essenceMap.put(sunsetEssence, getSunsetEssenceItem());
+        essenceMap.put(timeEssence, getTimeEssenceItem());
+
+        for (Map.Entry<Essence, ItemStack> entry : essenceMap.entrySet()) {
+            if (isEssenceItem(item, entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+
+        return null; // No matching essence found
+    }
+
+    private static boolean isEssenceItem(ItemStack item, ItemStack essenceItem) {
+        // Implement the comparison logic as needed, e.g., check material, name, lore, etc.
+        return item.isSimilar(essenceItem);
+    }
 }

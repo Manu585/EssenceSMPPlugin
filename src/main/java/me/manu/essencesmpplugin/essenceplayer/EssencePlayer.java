@@ -1,5 +1,6 @@
 package me.manu.essencesmpplugin.essenceplayer;
 
+import me.manu.essencesmpplugin.EssenceSMPPlugin;
 import me.manu.essencesmpplugin.essence.Essence;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -19,22 +20,30 @@ public class EssencePlayer {
         return uuid;
     }
 
-    public void activateEssence(EssencePlayer player, Essence essence) {
-        EssencePlayer essencePlayer = ESSENCE_PLAYERS.computeIfAbsent(player.getUuid(), EssencePlayer::new);
-        essencePlayer.activeEssences.add(essence);
+    public void activateEssence(Essence essence) {
+        deactivateCurrentEssence();
+        activeEssences.add(essence);
+
+        // Apply essence effects or logic
+        // Example: essence.applyEffects(this.player);
+        //EssenceSMPPlugin.getPotionEffectManager().applyPermanentEffect(Bukkit.getPlayer(this.uuid), essence.getPotionEffect());
     }
 
-    public void deactivateEssence(EssencePlayer player, Essence essence) {
-        EssencePlayer essencePlayer = ESSENCE_PLAYERS.get(player.getUuid());
-        if (essencePlayer != null) {
-            essencePlayer.activeEssences.remove(essence);
-        }
+    // Deactivates any currently active essences.
+    public void deactivateCurrentEssence() {
+        activeEssences.forEach(essence -> {
+            EssenceSMPPlugin.getGeneralMethods().removeAllPotionEffects(Bukkit.getPlayer(this.uuid));
+        });
+        activeEssences.clear();
     }
 
-    public boolean hasEssenceActive(EssencePlayer player, Essence essence) {
-        if (ESSENCE_PLAYERS.get(player.getUuid()) == null) {
-            return false;
-        } else if (activeEssences.isEmpty()) {
+    // Deactivates a specific essence
+    public void deactivateEssence(Essence essence) {
+        this.activeEssences.remove(essence);
+    }
+
+    public boolean hasEssenceActive(Essence essence) {
+        if (activeEssences.isEmpty()) {
             return false;
         } else if (activeEssences.contains(essence)) {
             return true;
@@ -42,15 +51,14 @@ public class EssencePlayer {
             return false;
     }
 
-    public String getActiveEssences(EssencePlayer player) {
-        if (ESSENCE_PLAYERS.get(player.getUuid()) == null) {
-            return "No active essences";
-        } else if (activeEssences.isEmpty()) {
-            return "No active essences";
-        } else {
-            return activeEssences.toString();
+    public Set<Essence> getActiveEssences() {
+        EssencePlayer essencePlayer = ESSENCE_PLAYERS.get(this.uuid);
+        if (essencePlayer == null) {
+            return Collections.emptySet(); // Returns an empty set if the player has no active essences
         }
+        return new HashSet<>(essencePlayer.activeEssences);
     }
+
 
     // Gets the EssencePlayer instance for the specified UUID
     public static EssencePlayer getEssencePlayer(UUID uuid) {
@@ -62,6 +70,7 @@ public class EssencePlayer {
         return Bukkit.getPlayer(uuid);
     }
 
+    // Registers a new EssencePlayer
     public static void registerEssencePlayer(EssencePlayer player) {
         ESSENCE_PLAYERS.put(player.getUuid(), player);
     }

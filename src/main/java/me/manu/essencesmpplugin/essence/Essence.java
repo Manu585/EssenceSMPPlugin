@@ -1,6 +1,9 @@
 package me.manu.essencesmpplugin.essence;
 
+import me.manu.essencesmpplugin.essenceplayer.EssencePlayer;
+import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 
 import java.util.List;
 
@@ -39,4 +42,8 @@ public abstract class Essence {
     public void setEssenceItem(ItemStack essenceItem) {
         this.essenceItem = essenceItem;
     }
+
+    public abstract void handleEvent(PlayerEvent e, EssencePlayer essencePlayer);
+
+    public abstract PotionEffect getPotionEffect();
 }
