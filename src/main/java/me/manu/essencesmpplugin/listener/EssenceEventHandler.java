@@ -42,7 +42,6 @@ public class EssenceEventHandler implements Listener {
         }
     }
 
-
     // PERFORM SUB ESSENCES METHODS
     @EventHandler
     public void onPlayerInteractEvent(PlayerInteractEvent e) {
