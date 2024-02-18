@@ -14,7 +14,6 @@ public class EssenceEventHandler implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
-        // Check if the action is a right-click action.
         if (e.getAction().isRightClick()) {
             ItemStack item = e.getItem();
             if (item != null) {
@@ -22,18 +21,13 @@ public class EssenceEventHandler implements Listener {
                 if (essence != null) {
                     EssencePlayer essencePlayer = EssencePlayer.getEssencePlayer(e.getPlayer().getUniqueId());
 
-                    // Check if this essence is already active, if so, inform the player.
                     if (essencePlayer.hasEssenceActive(essence)) {
                         e.getPlayer().sendMessage(essence.getEssenceName() + " is already active.");
                     } else {
-                        // Deactivate any currently active essence.
                         essencePlayer.deactivateCurrentEssence();
 
-                        // Activate the new essence.
                         essencePlayer.activateEssence(essence);
                         e.getPlayer().sendMessage("Activated " + essence.getEssenceName() + ".");
-
-                        // Optionally, consume the essence item or perform additional logic as needed.
                     }
                 }
             }
@@ -41,21 +35,14 @@ public class EssenceEventHandler implements Listener {
     }
 
     private Essence getEssenceForItem(ItemStack item) {
-        // This method should check if the given item matches any known essence items
-        // and return the corresponding Essence instance if found.
-        // This is a placeholder for the actual implementation.
-        return EssenceCreator.getEssenceByItemStack(item); // Example method call, implement accordingly.
+        return EssenceCreator.getEssenceByItemStack(item);
     }
 
     private void activateEssence(EssencePlayer essencePlayer, Essence essence, PlayerInteractEvent e) {
-        // Deactivate all currently active essences
         essencePlayer.getActiveEssences().forEach(activeEssence -> essencePlayer.deactivateEssence(activeEssence));
 
-        // Activate the new essence
         essencePlayer.activateEssence(essence);
         e.getPlayer().sendMessage("Activated " + essence.getEssenceName());
-
-        // Handle item removal or any other activation logic here.
     }
 
     @EventHandler
