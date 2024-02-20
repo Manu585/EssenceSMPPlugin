@@ -1,12 +1,8 @@
 package me.manu.essencesmpplugin.methods;
 
-import me.manu.essencesmpplugin.essence.Essence;
 import me.manu.essencesmpplugin.essenceplayer.EssencePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
 public class GeneralMethods {
@@ -20,35 +16,38 @@ public class GeneralMethods {
         }
     }
 
-    public void onRightClickWithEssence(PlayerInteractEvent e, Essence essence) {
-        ItemStack item = essence.getEssenceItem();
-        e.getPlayer().sendMessage("BEFORE IF");
-        System.out.println("BEFORE IF");
-        if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if (e.getPlayer().getInventory().getItemInMainHand().isSimilar(item)) {
-                e.getPlayer().sendMessage("IF ITEM IN HAND AND RIGHT CLICK");
-                System.out.println("IF ITEM IN HAND AND RIGHT CLICK");
-                EssencePlayer essencePlayer = EssencePlayer.getEssencePlayer(e.getPlayer().getUniqueId());
-                if (!essencePlayer.hasEssenceActive(essence)) {
-                    // Deactivate all currently active essences
-                    essencePlayer.getActiveEssences().forEach(essencePlayer::deactivateEssence);
-
-                    // Activate the new essence
-                    essencePlayer.activateEssence(essence);
-                    e.getPlayer().getInventory().removeItemAnySlot(item.asOne()); // Ensure only one item is removed
-                    e.getPlayer().sendMessage("Activated " + essence.getEssenceName());
-                    System.out.println("Activated " + essence.getEssenceName());
-                } else {
-                    e.getPlayer().sendMessage(essence.getEssenceName() + " is already active.");
-                    System.out.println(essence.getEssenceName() + " is already active.");
-                }
-            }
-        }
-    }
+//    public void onRightClickWithEssence(PlayerInteractEvent e) {
+//        e.getPlayer().sendMessage("HEYHHEYHYEHYEHHYEHEYH");
+//        if (e.getAction().isRightClick()) {
+//            e.getPlayer().sendMessage("RIGHT CLICKED");
+//            ItemStack item = e.getItem();
+//            if (item != null) {
+//                Essence essence = EssenceCreator.getEssenceByItemStack(item);
+//                e.getPlayer().sendMessage("Essence: " + essence.getEssenceName());
+//                if (essence != null) {
+//                    EssencePlayer essencePlayer = EssencePlayer.getEssencePlayer(e.getPlayer().getUniqueId());
+//
+//                    // Check if this essence is already active, if so, inform the player.
+//                    if (essencePlayer.hasEssenceActive(essence)) {
+//                        e.getPlayer().sendMessage(essence.getEssenceName() + " is already active.");
+//                    } else {
+//                        // Deactivate any currently active essence.
+//                        essencePlayer.deactivateCurrentEssence();
+//
+//                        // Activate the new essence.
+//                        essencePlayer.activateEssence(essence);
+//                        e.getPlayer().sendMessage("Activated " + essence.getEssenceName() + ".");
+//
+//                        // Optionally, consume the essence item or perform additional logic as needed.
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     public void removeAllPotionEffects(Player player) {
         for (PotionEffectType effect : PotionEffectType.values()) {
-            if (effect != null && player.hasPotionEffect(effect)) {
+            if (player.hasPotionEffect(effect)) {
                 player.removePotionEffect(effect);
             }
         }

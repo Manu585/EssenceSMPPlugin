@@ -6,12 +6,14 @@ import me.manu.essencesmpplugin.manager.EssenceCreator;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerToggleFlightEvent;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
 public class EssenceEventHandler implements Listener {
 
+    // HAS TO BE THERE
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
         // Check if the action is a right-click action.
@@ -40,30 +42,75 @@ public class EssenceEventHandler implements Listener {
         }
     }
 
-    private Essence getEssenceForItem(ItemStack item) {
-        // This method should check if the given item matches any known essence items
-        // and return the corresponding Essence instance if found.
-        // This is a placeholder for the actual implementation.
-        return EssenceCreator.getEssenceByItemStack(item); // Example method call, implement accordingly.
-    }
 
-    private void activateEssence(EssencePlayer essencePlayer, Essence essence, PlayerInteractEvent e) {
-        // Deactivate all currently active essences
-        essencePlayer.getActiveEssences().forEach(activeEssence -> essencePlayer.deactivateEssence(activeEssence));
-
-        // Activate the new essence
-        essencePlayer.activateEssence(essence);
-        e.getPlayer().sendMessage("Activated " + essence.getEssenceName());
-
-        // Handle item removal or any other activation logic here.
+    // PERFORM SUB ESSENCES METHODS
+    @EventHandler
+    public void onPlayerInteractEvent(PlayerInteractEvent e) {
+        EssencePlayer essencePlayer = EssencePlayer.getEssencePlayer(e.getPlayer().getUniqueId());
+        if (essencePlayer != null) {
+            essencePlayer.getActiveEssences().forEach(essence -> essence.handleEvent(e, essencePlayer));
+        }
     }
 
     @EventHandler
-    public void onPlayerToggleFlight(PlayerToggleFlightEvent event) {
-        Player player = event.getPlayer();
+    public void onPlayerMove(PlayerMoveEvent e) {
+        EssencePlayer essencePlayer = EssencePlayer.getEssencePlayer(e.getPlayer().getUniqueId());
+        if (essencePlayer != null) {
+            essencePlayer.getActiveEssences().forEach(essence -> essence.handleEvent(e, essencePlayer));
+        }
+    }
+
+    @EventHandler
+    public void onPlayerToggleFlight(PlayerToggleFlightEvent e) {
+        Player player = e.getPlayer();
         EssencePlayer essencePlayer = EssencePlayer.getEssencePlayer(player.getUniqueId());
         if (essencePlayer != null) {
-            essencePlayer.getActiveEssences().forEach(essence -> essence.handleEvent(event, essencePlayer));
+            essencePlayer.getActiveEssences().forEach(essence -> essence.handleEvent(e, essencePlayer));
+        }
+    }
+
+    @EventHandler
+    public void onRightClickAtEntity(PlayerInteractAtEntityEvent e) {
+        Player player = e.getPlayer();
+        EssencePlayer essencePlayer = EssencePlayer.getEssencePlayer(player.getUniqueId());
+        if (essencePlayer != null) {
+            essencePlayer.getActiveEssences().forEach(essence -> essence.handleEvent(e, essencePlayer));
+        }
+    }
+
+    @EventHandler
+    public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent e) {
+        Player player = (Player) e.getDamager();
+        EssencePlayer essencePlayer = EssencePlayer.getEssencePlayer(player.getUniqueId());
+        if (essencePlayer != null) {
+            essencePlayer.getActiveEssences().forEach(essence -> essence.handleEvent(e, essencePlayer));
+        }
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent e) {
+        Player player = e.getPlayer();
+        EssencePlayer essencePlayer = EssencePlayer.getEssencePlayer(player.getUniqueId());
+        if (essencePlayer != null) {
+            essencePlayer.getActiveEssences().forEach(essence -> essence.handleEvent(e, essencePlayer));
+        }
+    }
+
+    @EventHandler
+    public void onPlayerToggleSneak(PlayerToggleSneakEvent e) {
+        Player player = e.getPlayer();
+        EssencePlayer essencePlayer = EssencePlayer.getEssencePlayer(player.getUniqueId());
+        if (essencePlayer != null) {
+            essencePlayer.getActiveEssences().forEach(essence -> essence.handleEvent(e, essencePlayer));
+        }
+    }
+
+    @EventHandler
+    public void onExpChange(PlayerExpChangeEvent e) {
+        Player p = e.getPlayer();
+        EssencePlayer essencePlayer = EssencePlayer.getEssencePlayer(p.getUniqueId());
+        if (essencePlayer != null) {
+            essencePlayer.getActiveEssences().forEach(essence -> essence.handleEvent(e, essencePlayer));
         }
     }
 }

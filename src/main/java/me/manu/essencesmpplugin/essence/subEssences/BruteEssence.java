@@ -1,13 +1,10 @@
 package me.manu.essencesmpplugin.essence.subEssences;
 
-import me.manu.essencesmpplugin.EssenceSMPPlugin;
 import me.manu.essencesmpplugin.essence.Essence;
 import me.manu.essencesmpplugin.essenceplayer.EssencePlayer;
-import me.manu.essencesmpplugin.manager.EssenceCreator;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.event.player.PlayerEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
@@ -17,16 +14,21 @@ import java.util.List;
 
 public class BruteEssence extends Essence {
     public BruteEssence() {
-        super("Brute Essence", createLore(), new ItemStack(Material.LIME_DYE));
+        super("Brute Essence", new ItemStack(Material.LIME_DYE));
+    }
+
+    @Override
+    protected void initialize() {
+        this.setEssenceLore(createLore());
         configureItemMeta();
     }
 
-    private static List<String> createLore() {
+    private List<String> createLore() {
         List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "FIGHT!");
-        lore.add(ChatColor.GREEN + "Piglins + Piglin Brutes will not attack you.");
-        lore.add(ChatColor.GREEN + "Increased axe damage and disables enemies shields.");
-        lore.add(ChatColor.GRAY + "Right click with axe to actiavte " + ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "FULL HOG" + ChatColor.GRAY + "!");
+        lore.add(getEssenceColor() + "" + ChatColor.BOLD + "FIGHT!");
+        lore.add(getEssenceLoreColor() + "Piglins + Piglin Brutes will not attack you.");
+        lore.add(getEssenceLoreColor() + "Increased axe damage and disables enemies shields.");
+        lore.add(ChatColor.GRAY + "Right click with axe to actiavte " + getEssenceColor() + "" + ChatColor.BOLD + "FULL HOG" + ChatColor.GRAY + "!");
         lore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Full Hog: resistance 2, slowness 1, + 4 hearts for 15 seconds.");
         lore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Cooldown of 160 seconds.");
         return lore;
@@ -36,21 +38,28 @@ public class BruteEssence extends Essence {
         ItemStack item = getEssenceItem();
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(ChatColor.DARK_GREEN + getEssenceName());
+            meta.setDisplayName(getEssenceColor() + getEssenceName());
             meta.setLore(getEssenceLore());
             item.setItemMeta(meta);
         }
     }
 
     @Override
-    public void handleEvent(PlayerEvent e, EssencePlayer essencePlayer) {
-        if (e instanceof PlayerInteractEvent) {
-            EssenceSMPPlugin.getGeneralMethods().onRightClickWithEssence((PlayerInteractEvent) e, EssenceCreator.getBruteEssence());
-        }
+    public void handleEvent(Event e, EssencePlayer essencePlayer) {
     }
 
     @Override
-    public PotionEffect getPotionEffect() {
-        return null;
+    public List<PotionEffect> getPassivePotionEffect() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public ChatColor getEssenceColor() {
+        return ChatColor.DARK_GREEN;
+    }
+
+    @Override
+    public ChatColor getEssenceLoreColor() {
+        return ChatColor.GREEN;
     }
 }

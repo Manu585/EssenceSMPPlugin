@@ -4,6 +4,7 @@ import me.manu.essencesmpplugin.EssenceSMPPlugin;
 import me.manu.essencesmpplugin.essence.Essence;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 
 import java.util.*;
 
@@ -11,6 +12,7 @@ public class EssencePlayer {
     private static final Map<UUID, EssencePlayer> ESSENCE_PLAYERS = new HashMap<>();
     private final UUID uuid;
     private final Set<Essence> activeEssences = new HashSet<>();
+    private boolean isInWater = false;
 
     public EssencePlayer(UUID uuid) {
         this.uuid = uuid;
@@ -21,12 +23,19 @@ public class EssencePlayer {
     }
 
     public void activateEssence(Essence essence) {
+        Player player = getPlayer();
+        if (player == null) {
+            return;
+        }
         deactivateCurrentEssence();
+        player.sendMessage("You have activated the " + essence.getEssenceColor() + essence.getEssenceName() + " essence!");
+        player.getInventory().removeItem(essence.getEssenceItem());
         activeEssences.add(essence);
 
-        // Apply essence effects or logic
-        // Example: essence.applyEffects(this.player);
-        //EssenceSMPPlugin.getPotionEffectManager().applyPermanentEffect(Bukkit.getPlayer(this.uuid), essence.getPotionEffect());
+        List<PotionEffect> effects = essence.getPassivePotionEffect();
+        for (PotionEffect effect : effects) {
+            EssenceSMPPlugin.getPotionEffectManager().applyPermanentEffect(player, effect);
+        }
     }
 
     // Deactivates any currently active essences.
@@ -78,5 +87,16 @@ public class EssencePlayer {
     // Returns all registered EssencePlayers
     public static Map<UUID, EssencePlayer> getPlayers() {
         return new HashMap<>(ESSENCE_PLAYERS);
+    }
+
+
+
+    //ESSENCE RELATED
+    public boolean isInWater() {
+        return isInWater;
+    }
+
+    public void setInWater(boolean isInWater) {
+        this.isInWater = isInWater;
     }
 }

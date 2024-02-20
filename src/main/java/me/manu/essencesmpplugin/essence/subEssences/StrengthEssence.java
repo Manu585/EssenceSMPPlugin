@@ -1,32 +1,36 @@
 package me.manu.essencesmpplugin.essence.subEssences;
 
-import me.manu.essencesmpplugin.EssenceSMPPlugin;
 import me.manu.essencesmpplugin.essence.Essence;
 import me.manu.essencesmpplugin.essenceplayer.EssencePlayer;
-import me.manu.essencesmpplugin.manager.EssenceCreator;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.event.player.PlayerEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class StrengthEssence extends Essence {
     public StrengthEssence() {
-        super("Strength Essence", createLore(), new ItemStack(Material.RED_DYE));
+        super("Strength Essence", new ItemStack(Material.RED_DYE));
+    }
+
+    @Override
+    protected void initialize() {
+        this.setEssenceLore(createLore());
         configureItemMeta();
     }
 
-    private static List<String> createLore() {
+    private List<String> createLore() {
         List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.DARK_RED + "" + ChatColor.BOLD + "STRONG LIKE A BULL");
-        lore.add(ChatColor.RED + "Start with strength 1");
-        lore.add(ChatColor.RED + "Upon 5 kills, get strength 2");
-        lore.add(ChatColor.RED + "Reset strength on death");
-        lore.add(ChatColor.RED + "Shift + right click to get strength 3 for 10 seconds");
+        lore.add(getEssenceColor() + "" + ChatColor.BOLD + "STRONG LIKE A BULL");
+        lore.add(getEssenceLoreColor() + "Start with strength 1");
+        lore.add(getEssenceLoreColor() + "Upon 5 kills, get strength 2");
+        lore.add(getEssenceLoreColor() + "Reset strength on death");
+        lore.add(getEssenceLoreColor() + "Shift + right click to get strength 3 for 10 seconds");
         return lore;
     }
 
@@ -34,16 +38,30 @@ public class StrengthEssence extends Essence {
         ItemStack item = getEssenceItem();
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(ChatColor.DARK_RED + getEssenceName());
+            meta.setDisplayName(getEssenceColor() + getEssenceName());
             meta.setLore(getEssenceLore());
             item.setItemMeta(meta);
         }
     }
 
     @Override
-    public void handleEvent(PlayerEvent e, EssencePlayer essencePlayer) {
-        if (e instanceof PlayerInteractEvent) {
-            EssenceSMPPlugin.getGeneralMethods().onRightClickWithEssence((PlayerInteractEvent) e, EssenceCreator.getStrengthEssence());
-        }
+    public void handleEvent(Event e, EssencePlayer essencePlayer) {
+    }
+
+    @Override
+    public List<PotionEffect> getPassivePotionEffect() {
+        List<PotionEffect> effects = new ArrayList<>();
+        effects.add(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 1));
+        return effects;
+    }
+
+    @Override
+    public ChatColor getEssenceColor() {
+        return ChatColor.DARK_RED;
+    }
+
+    @Override
+    public ChatColor getEssenceLoreColor() {
+        return ChatColor.RED;
     }
 }

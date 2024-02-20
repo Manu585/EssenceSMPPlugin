@@ -1,32 +1,35 @@
 package me.manu.essencesmpplugin.essence.subEssences;
 
-import me.manu.essencesmpplugin.EssenceSMPPlugin;
 import me.manu.essencesmpplugin.essence.Essence;
 import me.manu.essencesmpplugin.essenceplayer.EssencePlayer;
-import me.manu.essencesmpplugin.manager.EssenceCreator;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.event.player.PlayerEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MysteryEssence extends Essence {
     public MysteryEssence() {
-        super("Mystery Essence", createLore(), new ItemStack(Material.PINK_DYE));
+        super("Mystery Essence", new ItemStack(Material.PINK_DYE));
+    }
+
+    @Override
+    protected void initialize() {
+        this.setEssenceLore(createLore());
         configureItemMeta();
     }
 
-    private static List<String> createLore() {
+    private List<String> createLore() {
         List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "How?!.");
-        lore.add(ChatColor.LIGHT_PURPLE + "Give other players random effects when hitting them with a sword." + ChatColor.GRAY + " (50% chance of happening)");
-        lore.add(ChatColor.LIGHT_PURPLE + "Grants you potion effects, when getting hit by other players.");
-        lore.add(ChatColor.LIGHT_PURPLE + "Bows shoot random tipped arrows instead of normal arrows.");
-        lore.add(ChatColor.LIGHT_PURPLE + "Right clicking while holding a sword to explode like a creeper.");
+        lore.add(getEssenceColor() + "" + ChatColor.BOLD + "How?!.");
+        lore.add(getEssenceLoreColor() + "Give other players random effects when hitting them with a sword." + ChatColor.GRAY + " (50% chance of happening)");
+        lore.add(getEssenceLoreColor() + "Grants you potion effects, when getting hit by other players.");
+        lore.add(getEssenceLoreColor() + "Bows shoot random tipped arrows instead of normal arrows.");
+        lore.add(getEssenceLoreColor() + "Right clicking while holding a sword to explode like a creeper.");
         lore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Cooldown of 120 seconds.");
         return lore;
     }
@@ -35,16 +38,28 @@ public class MysteryEssence extends Essence {
         ItemStack item = getEssenceItem();
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(ChatColor.DARK_PURPLE + getEssenceName());
+            meta.setDisplayName(getEssenceColor() + getEssenceName());
             meta.setLore(getEssenceLore());
             item.setItemMeta(meta);
         }
     }
 
     @Override
-    public void handleEvent(PlayerEvent e, EssencePlayer essencePlayer) {
-        if (e instanceof PlayerInteractEvent) {
-            EssenceSMPPlugin.getGeneralMethods().onRightClickWithEssence((PlayerInteractEvent) e, EssenceCreator.getMysteryEssence());
-        }
+    public void handleEvent(Event e, EssencePlayer essencePlayer) {
+    }
+
+    @Override
+    public List<PotionEffect> getPassivePotionEffect() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public ChatColor getEssenceColor() {
+        return ChatColor.DARK_PURPLE;
+    }
+
+    @Override
+    public ChatColor getEssenceLoreColor() {
+        return ChatColor.LIGHT_PURPLE;
     }
 }

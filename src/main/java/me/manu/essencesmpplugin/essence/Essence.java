@@ -1,23 +1,26 @@
 package me.manu.essencesmpplugin.essence;
 
 import me.manu.essencesmpplugin.essenceplayer.EssencePlayer;
-import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.ChatColor;
+import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Essence {
     private String essenceName;
-    private List<String> essenceLore;
+    private List<String> essenceLore = new ArrayList<>();
     private ItemStack essenceItem;
 
-
-    public Essence(String name, List<String> lore, ItemStack item) {
+    public Essence(String name, ItemStack item) {
         this.essenceName = name;
-        this.essenceLore = lore;
         this.essenceItem = item;
+        initialize();
     }
+
+    protected abstract void initialize();
 
     public String getEssenceName() {
         return essenceName;
@@ -43,7 +46,15 @@ public abstract class Essence {
         this.essenceItem = essenceItem;
     }
 
-    public abstract void handleEvent(PlayerEvent e, EssencePlayer essencePlayer);
+    public abstract void handleEvent(Event e, EssencePlayer essencePlayer);
 
-    public abstract PotionEffect getPotionEffect();
+    public abstract List<PotionEffect> getPassivePotionEffect();
+
+    public abstract ChatColor getEssenceColor();
+
+    public abstract ChatColor getEssenceLoreColor();
+
+    public ChatColor getEssenceCooldownLoreColor() {
+        return ChatColor.GRAY;
+    }
 }
