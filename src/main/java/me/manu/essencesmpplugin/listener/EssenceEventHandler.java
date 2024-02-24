@@ -3,11 +3,13 @@ package me.manu.essencesmpplugin.listener;
 import me.manu.essencesmpplugin.essence.Essence;
 import me.manu.essencesmpplugin.essenceplayer.EssencePlayer;
 import me.manu.essencesmpplugin.manager.EssenceCreator;
+import me.manu.essencesmpplugin.util.EssenceChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
@@ -16,7 +18,6 @@ public class EssenceEventHandler implements Listener {
     // HAS TO BE THERE
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
-        // Check if the action is a right-click action.
         if (e.getAction().isRightClick()) {
             ItemStack item = e.getItem();
             if (item != null) {
@@ -28,14 +29,10 @@ public class EssenceEventHandler implements Listener {
                     if (essencePlayer.hasEssenceActive(essence)) {
                         e.getPlayer().sendMessage(essence.getEssenceName() + " is already active.");
                     } else {
-                        // Deactivate any currently active essence.
-                        essencePlayer.deactivateCurrentEssence();
-
                         // Activate the new essence.
                         essencePlayer.activateEssence(essence);
-                        e.getPlayer().sendMessage("Activated " + essence.getEssenceName() + ".");
-
-                        // Optionally, consume the essence item or perform additional logic as needed.
+                        e.getPlayer().sendMessage(EssenceChatColor.activatedEssenceMessage(essence));
+                        e.getPlayer().getInventory().removeItem(e.getItem().subtract(1));
                     }
                 }
             }
@@ -107,6 +104,15 @@ public class EssenceEventHandler implements Listener {
     @EventHandler
     public void onExpChange(PlayerExpChangeEvent e) {
         Player p = e.getPlayer();
+        EssencePlayer essencePlayer = EssencePlayer.getEssencePlayer(p.getUniqueId());
+        if (essencePlayer != null) {
+            essencePlayer.getActiveEssences().forEach(essence -> essence.handleEvent(e, essencePlayer));
+        }
+    }
+
+    @EventHandler
+    public void onEntityTarget(EntityTargetEvent e) {
+        Player p = (Player) e.getTarget();
         EssencePlayer essencePlayer = EssencePlayer.getEssencePlayer(p.getUniqueId());
         if (essencePlayer != null) {
             essencePlayer.getActiveEssences().forEach(essence -> essence.handleEvent(e, essencePlayer));

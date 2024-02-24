@@ -2,10 +2,12 @@ package me.manu.essencesmpplugin.essenceplayer;
 
 import me.manu.essencesmpplugin.EssenceSMPPlugin;
 import me.manu.essencesmpplugin.essence.Essence;
+import me.manu.essencesmpplugin.manager.EssenceCreator;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 
+import java.sql.SQLException;
 import java.util.*;
 
 public class EssencePlayer {
@@ -28,13 +30,21 @@ public class EssencePlayer {
             return;
         }
         deactivateCurrentEssence();
-        player.sendMessage("You have activated the " + essence.getEssenceColor() + essence.getEssenceName() + " essence!");
-        player.getInventory().removeItem(essence.getEssenceItem());
         activeEssences.add(essence);
+        try {
+            EssenceSMPPlugin.getDatabase().updateEssence(player, essence);
+        } catch (SQLException e) { e.printStackTrace(); }
 
         List<PotionEffect> effects = essence.getPassivePotionEffect();
         for (PotionEffect effect : effects) {
             EssenceSMPPlugin.getPotionEffectManager().applyPermanentEffect(player, effect);
+        }
+    }
+
+    public void activateEssenceByName(String name) {
+        Essence essence = EssenceCreator.getEssenceByName(name);
+        if (essence != null) {
+            activateEssence(essence);
         }
     }
 

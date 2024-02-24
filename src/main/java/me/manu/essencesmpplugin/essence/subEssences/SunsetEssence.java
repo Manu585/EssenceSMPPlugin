@@ -147,7 +147,7 @@ public class SunsetEssence extends Essence {
         Player p = e.getPlayer();
         EssencePlayer essencePlayer = EssencePlayer.getEssencePlayer(p.getUniqueId());
         if (essencePlayer != null && essencePlayer.hasEssenceActive(this)) {
-            if ((e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) && isHoldingSword(p)) {
+            if ((e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) && EssenceSMPPlugin.getGeneralMethods().isHoldingSword(p)) {
                 if (!EssenceSMPPlugin.getCooldownManager().isOnCooldown(p, "fireball")) {
                     EssenceSMPPlugin.getCooldownManager().setCooldown(p, "fireball", 160); // Cooldown in seconds
 
@@ -161,13 +161,6 @@ public class SunsetEssence extends Essence {
                 }
             }
         }
-    }
-
-    private boolean isHoldingSword(Player player) {
-        Material heldItemMaterial = player.getInventory().getItemInMainHand().getType();
-        return heldItemMaterial == Material.WOODEN_SWORD || heldItemMaterial == Material.STONE_SWORD ||
-                heldItemMaterial == Material.IRON_SWORD || heldItemMaterial == Material.GOLDEN_SWORD ||
-                heldItemMaterial == Material.DIAMOND_SWORD || heldItemMaterial == Material.NETHERITE_SWORD;
     }
 
     public void onFireballHit(EntityDamageByEntityEvent e) {
