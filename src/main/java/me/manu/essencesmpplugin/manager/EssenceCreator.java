@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EssenceCreator {
+    private static final Map<String, Essence> essencesByName = new HashMap<>();
     private static Essence airEssence;
     private static Essence bruteEssence;
     private static Essence darknessEssence;
@@ -33,8 +34,8 @@ public class EssenceCreator {
         strengthEssence = new StrengthEssence();
         sunsetEssence = new SunsetEssence();
         timeEssence = new TimeEssence();
+        registerEssences();
     }
-
 
     /**
      * Getters for the essences
@@ -68,6 +69,20 @@ public class EssenceCreator {
     public static ItemStack getSunsetEssenceItem() { return sunsetEssence.getEssenceItem(); }
     public static ItemStack getTimeEssenceItem() { return timeEssence.getEssenceItem(); }
 
+    private static void registerEssences() {
+        essencesByName.put(airEssence.getEssenceName(), airEssence);
+        essencesByName.put(bruteEssence.getEssenceName(), bruteEssence);
+        essencesByName.put(darknessEssence.getEssenceName(), darknessEssence);
+        essencesByName.put(dragonEssence.getEssenceName(), dragonEssence);
+        essencesByName.put(gravityEssence.getEssenceName(), gravityEssence);
+        essencesByName.put(mistEssence.getEssenceName(), mistEssence);
+        essencesByName.put(mobEssence.getEssenceName(), mobEssence);
+        essencesByName.put(mysteryEssence.getEssenceName(), mysteryEssence);
+        essencesByName.put(strengthEssence.getEssenceName(), strengthEssence);
+        essencesByName.put(sunsetEssence.getEssenceName(), sunsetEssence);
+        essencesByName.put(timeEssence.getEssenceName(), timeEssence);
+    }
+
     public static Essence getEssenceByItemStack(ItemStack item) {
         if (item == null) {
             return null;
@@ -94,6 +109,10 @@ public class EssenceCreator {
         }
 
         return null; // No matching essence found
+    }
+
+    public static Essence getEssenceByName(String name) {
+        return essencesByName.get(name);
     }
 
     private static boolean isEssenceItem(ItemStack item, ItemStack essenceItem) {

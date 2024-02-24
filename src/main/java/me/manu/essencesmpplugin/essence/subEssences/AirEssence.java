@@ -5,6 +5,7 @@ import me.manu.essencesmpplugin.essence.Essence;
 import me.manu.essencesmpplugin.essenceplayer.EssencePlayer;
 import me.manu.essencesmpplugin.manager.CooldownManager;
 import me.manu.essencesmpplugin.manager.EssenceCreator;
+import me.manu.essencesmpplugin.util.EssenceChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -21,6 +22,8 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.manu.essencesmpplugin.config.ConfigManager.getConfig;
+
 public class AirEssence extends Essence {
     public AirEssence() {
         super("Air Essence", new ItemStack(Material.LIGHT_BLUE_DYE));
@@ -28,7 +31,11 @@ public class AirEssence extends Essence {
 
     @Override
     protected void initialize() {
-        this.setEssenceLore(createLore());
+        List<String> formattedLore = new ArrayList<>();
+        for (String line : getConfig().getStringList("essence.airessence.essencelore")) {
+            formattedLore.add(EssenceChatColor.format(line));
+        }
+        this.setEssenceLore(formattedLore);
         configureItemMeta();
     }
 
@@ -45,7 +52,7 @@ public class AirEssence extends Essence {
         ItemStack item = getEssenceItem();
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(getEssenceColor() + getEssenceName());
+            meta.setDisplayName(getConfig().getString("essence.airessence.essencename"));
             meta.setLore(getEssenceLore());
             item.setItemMeta(meta);
         }
@@ -61,7 +68,7 @@ public class AirEssence extends Essence {
     @Override
     public List<PotionEffect> getPassivePotionEffect() {
         List<PotionEffect> effect = new ArrayList<PotionEffect>();
-        effect.add(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
+        effect.add(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, getConfig().getInt("essence.airessence.passivepotioneffect.speed")));
         return effect;
     }
 
@@ -76,7 +83,6 @@ public class AirEssence extends Essence {
     }
 
     private void doubleJump(PlayerToggleFlightEvent event, EssencePlayer essencePlayer) {
-        event.getPlayer().sendMessage("Double jump");
         if (essencePlayer.hasEssenceActive(EssenceCreator.getAirEssence())) {
             Player player = Bukkit.getPlayer(essencePlayer.getUuid());
             if (player == null || !player.getGameMode().equals(GameMode.SURVIVAL) && !player.getGameMode().equals(GameMode.ADVENTURE)) {

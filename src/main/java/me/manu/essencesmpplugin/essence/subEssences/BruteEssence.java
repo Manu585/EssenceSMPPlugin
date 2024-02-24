@@ -1,13 +1,22 @@
 package me.manu.essencesmpplugin.essence.subEssences;
 
+import me.manu.essencesmpplugin.EssenceSMPPlugin;
 import me.manu.essencesmpplugin.essence.Essence;
 import me.manu.essencesmpplugin.essenceplayer.EssencePlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +55,15 @@ public class BruteEssence extends Essence {
 
     @Override
     public void handleEvent(Event e, EssencePlayer essencePlayer) {
+        if (e instanceof EntityDamageByEntityEvent) {
+            increaseAxeDamage((EntityDamageByEntityEvent) e);
+        }
+        if (e instanceof PlayerInteractEvent) {
+            fullHog((PlayerInteractEvent) e);
+        }
+        if (e instanceof EntityTargetEvent) {
+            piglinsIgnore((EntityTargetEvent) e);
+        }
     }
 
     @Override
@@ -61,5 +79,51 @@ public class BruteEssence extends Essence {
     @Override
     public ChatColor getEssenceLoreColor() {
         return ChatColor.GREEN;
+    }
+
+    public void increaseAxeDamage(EntityDamageByEntityEvent e) {
+        Player attacker = (Player) e.getDamager();
+        EssencePlayer essencePlayer = EssencePlayer.getEssencePlayer(attacker.getUniqueId());
+
+        if (essencePlayer != null && essencePlayer.hasEssenceActive(this)) {
+            if (EssenceSMPPlugin.getGeneralMethods().isHoldingAxe(attacker)) {
+                double damageDealt = e.getDamage();
+                e.setDamage(damageDealt + 2);
+            }
+        }
+    }
+
+    @EventHandler
+    public void piglinsIgnore(EntityTargetEvent event) {
+        if (event.getTarget() instanceof Player) {
+            Player player = (Player) event.getTarget();
+            EssencePlayer essencePlayer = EssencePlayer.getEssencePlayer(player.getUniqueId());
+
+            if (essencePlayer != null && essencePlayer.hasEssenceActive(this)) {
+                if (event.getEntityType() == EntityType.PIGLIN || event.getEntityType() == EntityType.PIGLIN_BRUTE) {
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
+
+    public void fullHog(PlayerInteractEvent e) {
+        Player p = e.getPlayer();
+        EssencePlayer essencePlayer = EssencePlayer.getEssencePlayer(p.getUniqueId());
+
+        if (essencePlayer != null && essencePlayer.hasEssenceActive(this)) {
+            if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                if (EssenceSMPPlugin.getGeneralMethods().isHoldingAxe(p)) {
+                    if (!EssenceSMPPlugin.getCooldownManager().isOnCooldown(p, "full_hog")) {
+                        EssenceSMPPlugin.getCooldownManager().setCooldown(p, "full_hog", 160);
+                        p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 300, 2));
+                        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 300, 1));
+                        p.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 300, 3));
+                    } else {
+                        p.sendMessage("FullHog is still on cooldown for " + EssenceSMPPlugin.getCooldownManager().getRemainingCooldown(p, "full_hog") + " seconds!");
+                    }
+                }
+            }
+        }
     }
 }
