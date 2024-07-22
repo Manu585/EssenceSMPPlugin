@@ -85,7 +85,6 @@ public class GravityEssence extends Essence {
                         .filter(entity -> entity instanceof Player && entity != player)
                         .map(entity -> (Player) entity)
                         .forEach(targetPlayer -> {
-                            // Apply both slowness and jump reduction effects
                             targetPlayer.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 5 * 20, 255, false, true));
                             targetPlayer.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 5 * 20, -255, false, true));
                         });
